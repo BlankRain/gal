@@ -1,5 +1,8 @@
 package   wo.le.ge.ca.ca.ca
 
+/***
+  as comment
+**/
 NodeType Page{
     URL: string @index(exact, fulltext) @count  @required @updated   @filter(StartWith('hello')),
     Name:   string @required(false)    ,
