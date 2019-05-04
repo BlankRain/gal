@@ -1,9 +1,14 @@
 package ast
 
-import "github.com/BlankRain/gal/token"
+import (
+	"bytes"
+
+	"github.com/BlankRain/gal/token"
+)
 
 type Node interface {
 	TokenLiteral() string
+	String() string
 }
 type Statement interface {
 	Node
@@ -26,10 +31,28 @@ func (p *Program) TokenLiteral() string {
 	}
 }
 
+func (p *Program) String() string {
+	var out bytes.Buffer
+	for _, s := range p.Statements {
+		out.WriteString(s.String())
+	}
+	return out.String()
+}
+
 type Identifier struct {
 	Token token.Token
 	Value string
 }
+
+func (id *Identifier) statementNode()  {}
+func (id *Identifier) expressionNode() {}
+func (id *Identifier) TokenLiteral() string {
+	return id.Token.Literal
+}
+func (id *Identifier) String() string {
+	return id.Value
+}
+
 type LetStatement struct {
 	Token token.Token
 	Name  *Identifier
@@ -41,9 +64,106 @@ func (ls *LetStatement) statementNode() {}
 func (ls *LetStatement) TokenLiteral() string {
 	return ls.Token.Literal
 }
+func (ls *LetStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(ls.Name.String())
+	out.WriteString(" = ")
+	if ls.Value != nil {
+		out.WriteString(ls.Value.String())
+	}
+	out.WriteString(";")
+	return out.String()
+}
 
-func (id *Identifier) statementNode() {}
+type ReturnStatement struct {
+	Token       token.Token
+	ReturnValue Expression
+}
 
-func (id *Identifier) TokenLiteral() string {
-	return id.Token.Literal
+func (rt *ReturnStatement) statementNode() {}
+
+func (rt *ReturnStatement) TokenLiteral() string {
+	return rt.Token.Literal
+}
+func (rt *ReturnStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(rt.TokenLiteral() + "   ")
+	if rt.ReturnValue != nil {
+		out.WriteString(rt.ReturnValue.String())
+	}
+	out.WriteString(";")
+	return out.String()
+}
+
+type ExpressionStatement struct {
+	Token      token.Token
+	Expression Expression
+}
+
+func (es *ExpressionStatement) statementNode() {}
+
+func (es *ExpressionStatement) TokenLiteral() string {
+	return es.Token.Literal
+}
+func (es *ExpressionStatement) String() string {
+	if es.Expression != nil {
+		return es.Expression.String()
+	}
+	return ""
+}
+
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
+func (il *IntegerLiteral) expressionNode() {}
+func (il *IntegerLiteral) TokenLiteral() string {
+	return il.Token.Literal
+}
+func (il *IntegerLiteral) String() string {
+	return il.Token.Literal
+}
+
+type PrefixExpression struct {
+	Token    token.Token
+	Operator string
+	Right    Expression
+}
+
+func (pe *PrefixExpression) expressionNode() {}
+
+func (pe *PrefixExpression) TokenLiteral() string {
+	return pe.Token.Literal
+}
+
+func (pe *PrefixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(pe.Operator)
+	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+	return out.String()
+}
+
+type InfixExpression struct {
+	Token    token.Token
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+func (inf *InfixExpression) expressionNode() {}
+func (inf *InfixExpression) TokenLiteral() string {
+	return inf.Token.Literal
+}
+func (inf *InfixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(inf.Left.String())
+	out.WriteString(" " + inf.Operator + " ")
+	out.WriteString(inf.Right.String())
+	out.WriteString(")")
+	return out.String()
 }
