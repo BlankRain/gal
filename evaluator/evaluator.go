@@ -141,7 +141,6 @@ func evalIfExpression(node *ast.IfExpression, env *object.Environment) object.Ob
 	}
 	if isTruthy(condition) {
 		r := Eval(node.Consequence, env)
-		fmt.Println(r, "eval...", node.Consequence)
 		return r
 	} else if node.Alternative != nil {
 		return Eval(node.Alternative, env)
