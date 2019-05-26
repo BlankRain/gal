@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"fmt"
+
 	"github.com/BlankRain/gal/object"
 )
 
@@ -92,6 +94,18 @@ var builtins = map[string]*object.Builtin{
 			newElements := make([]object.Object, length+1, length+1)
 			copy(newElements, arr.Elements)
 			newElements[length] = args[1]
+			return &object.Array{Elements: newElements}
+		},
+	},
+	"println": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			newElements := []object.Object{}
+			for _, arg := range args {
+				s := fmt.Sprintf("%v", arg.Inspect())
+				fmt.Print(s)
+				newElements = append(newElements, &object.String{Value: s})
+			}
+			fmt.Println()
 			return &object.Array{Elements: newElements}
 		},
 	},
