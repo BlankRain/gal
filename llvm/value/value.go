@@ -1,7 +1,7 @@
 package value
 
 import (
-	types "github.com/BlankRain/gal/object"
+	types "github.com/BlankRain/gal/llvm/types"
 	llvmValue "github.com/llir/llvm/ir/value"
 )
 

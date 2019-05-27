@@ -6,21 +6,21 @@ import (
 	"github.com/BlankRain/gal/llvm/strings"
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
-	"github.com/llir/llvm/ir/types"
+	llvmtypes "github.com/llir/llvm/ir/types"
 	llvmValue "github.com/llir/llvm/ir/value"
 )
 
-var I8 = &Int{Type: types.I8, TypeName: "int8", TypeSize: 8 / 8}
-var I16 = &Int{Type: types.I16, TypeName: "int16", TypeSize: 18 / 8}
-var I32 = &Int{Type: types.I32, TypeName: "int32", TypeSize: 32 / 8}
-var I64 = &Int{Type: types.I64, TypeName: "int64", TypeSize: 64 / 8}
+var I8 = &Int{Type: llvmtypes.I8, TypeName: "int8", TypeSize: 8 / 8}
+var I16 = &Int{Type: llvmtypes.I16, TypeName: "int16", TypeSize: 18 / 8}
+var I32 = &Int{Type: llvmtypes.I32, TypeName: "int32", TypeSize: 32 / 8}
+var I64 = &Int{Type: llvmtypes.I64, TypeName: "int64", TypeSize: 64 / 8}
 
 var Void = &VoidType{}
 var String = &StringType{}
 var Bool = &BoolType{}
 
 type Type interface {
-	LLVM() types.Type
+	LLVM() llvmtypes.Type
 	Name() string
 
 	// Size of type in bytes
@@ -65,10 +65,10 @@ type Struct struct {
 	IsHeapAllocated bool
 
 	SourceName string
-	Type       types.Type
+	Type       llvmtypes.Type
 }
 
-func (s Struct) LLVM() types.Type {
+func (s Struct) LLVM() llvmtypes.Type {
 	return s.Type
 }
 
@@ -79,8 +79,8 @@ func (s Struct) Name() string {
 func (s Struct) Zero(block *ir.Block, alloca llvmValue.Value) {
 	for key, valType := range s.Members {
 		ptr := block.NewGetElementPtr(alloca,
-			constant.NewInt(types.I32, 0),
-			constant.NewInt(types.I32, int64(s.MemberIndexes[key])),
+			constant.NewInt(llvmtypes.I32, 0),
+			constant.NewInt(llvmtypes.I32, int64(s.MemberIndexes[key])),
 		)
 		valType.Zero(block, ptr)
 	}
@@ -102,7 +102,7 @@ type Method struct {
 	MethodName      string
 }
 
-func (m Method) LLVM() types.Type {
+func (m Method) LLVM() llvmtypes.Type {
 	return m.Function.LLVM()
 }
 
@@ -128,7 +128,7 @@ type Function struct {
 	JumpFunction *ir.Func
 }
 
-func (f Function) LLVM() types.Type {
+func (f Function) LLVM() llvmtypes.Type {
 	return f.LlvmFunction.Type()
 }
 
@@ -140,8 +140,8 @@ type BoolType struct {
 	backingType
 }
 
-func (BoolType) LLVM() types.Type {
-	return types.I1
+func (BoolType) LLVM() llvmtypes.Type {
+	return llvmtypes.I1
 }
 
 func (BoolType) Name() string {
@@ -153,15 +153,15 @@ func (BoolType) Size() int64 {
 }
 
 func (b BoolType) Zero(block *ir.Block, alloca llvmValue.Value) {
-	block.NewStore(constant.NewInt(types.I1, 0), alloca)
+	block.NewStore(constant.NewInt(llvmtypes.I1, 0), alloca)
 }
 
 type VoidType struct {
 	backingType
 }
 
-func (VoidType) LLVM() types.Type {
-	return types.Void
+func (VoidType) LLVM() llvmtypes.Type {
+	return llvmtypes.Void
 }
 
 func (VoidType) Name() string {
@@ -175,12 +175,12 @@ func (VoidType) Size() int64 {
 type Int struct {
 	backingType
 
-	Type     *types.IntType
+	Type     *llvmtypes.IntType
 	TypeName string
 	TypeSize int64
 }
 
-func (i Int) LLVM() types.Type {
+func (i Int) LLVM() llvmtypes.Type {
 	return i.Type
 }
 
@@ -198,14 +198,14 @@ func (i Int) Zero(block *ir.Block, alloca llvmValue.Value) {
 
 type StringType struct {
 	backingType
-	Type types.Type
+	Type llvmtypes.Type
 }
 
 // Populated by compiler.go
-var ModuleStringType types.Type
+var ModuleStringType llvmtypes.Type
 var EmptyStringConstant *ir.Global
 
-func (StringType) LLVM() types.Type {
+func (StringType) LLVM() llvmtypes.Type {
 	return ModuleStringType
 }
 
@@ -218,9 +218,9 @@ func (StringType) Size() int64 {
 }
 
 func (s StringType) Zero(block *ir.Block, alloca llvmValue.Value) {
-	lenPtr := block.NewGetElementPtr(alloca, constant.NewInt(types.I32, 0), constant.NewInt(types.I32, 0))
-	backingDataPtr := block.NewGetElementPtr(alloca, constant.NewInt(types.I32, 0), constant.NewInt(types.I32, 1))
-	block.NewStore(constant.NewInt(types.I64, 0), lenPtr)
+	lenPtr := block.NewGetElementPtr(alloca, constant.NewInt(llvmtypes.I32, 0), constant.NewInt(llvmtypes.I32, 0))
+	backingDataPtr := block.NewGetElementPtr(alloca, constant.NewInt(llvmtypes.I32, 0), constant.NewInt(llvmtypes.I32, 1))
+	block.NewStore(constant.NewInt(llvmtypes.I64, 0), lenPtr)
 	block.NewStore(strings.Toi8Ptr(block, EmptyStringConstant), backingDataPtr)
 }
 
@@ -228,10 +228,10 @@ type Array struct {
 	backingType
 	Type     Type
 	Len      uint64
-	LlvmType types.Type
+	LlvmType llvmtypes.Type
 }
 
-func (a Array) LLVM() types.Type {
+func (a Array) LLVM() llvmtypes.Type {
 	return a.LlvmType
 }
 
@@ -241,7 +241,7 @@ func (a Array) Name() string {
 
 func (a Array) Zero(block *ir.Block, alloca llvmValue.Value) {
 	for i := uint64(0); i < a.Len; i++ {
-		ptr := block.NewGetElementPtr(alloca, constant.NewInt(types.I64, 0), constant.NewInt(types.I64, int64(i)))
+		ptr := block.NewGetElementPtr(alloca, constant.NewInt(llvmtypes.I64, 0), constant.NewInt(llvmtypes.I64, int64(i)))
 		a.Type.Zero(block, ptr)
 	}
 }
@@ -249,10 +249,10 @@ func (a Array) Zero(block *ir.Block, alloca llvmValue.Value) {
 type Slice struct {
 	backingType
 	Type     Type // type of the items in the slice []int => int
-	LlvmType types.Type
+	LlvmType llvmtypes.Type
 }
 
-func (s Slice) LLVM() types.Type {
+func (s Slice) LLVM() llvmtypes.Type {
 	return s.LlvmType
 }
 
@@ -300,11 +300,11 @@ type Pointer struct {
 	Type                  Type
 	IsNonAllocDereference bool
 
-	LlvmType types.Type
+	LlvmType llvmtypes.Type
 }
 
-func (p Pointer) LLVM() types.Type {
-	return types.NewPointer(p.Type.LLVM())
+func (p Pointer) LLVM() llvmtypes.Type {
+	return llvmtypes.NewPointer(p.Type.LLVM())
 }
 
 func (p Pointer) Name() string {
@@ -325,6 +325,6 @@ func (m MultiValue) Name() string {
 	return "multivalue"
 }
 
-func (m MultiValue) LLVM() types.Type {
+func (m MultiValue) LLVM() llvmtypes.Type {
 	panic("MutliValue has no LLVM type")
 }
