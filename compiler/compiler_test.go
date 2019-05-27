@@ -15,6 +15,8 @@ func TestStringIR(t *testing.T) {
 		ir       string
 	}{
 		{"10", 10, "i32 10"},
+		{"true", true, "i1 true"},
+		{"false", false, "i1 false"},
 		// {"if (true) { 10 }", 10},
 		// {"if (false) { 10 }", nil},
 		// {"if (1) { 10 }", 10},
@@ -24,11 +26,13 @@ func TestStringIR(t *testing.T) {
 	}
 	for _, tt := range tests {
 		evaluated := testCompile(tt.input)
-		integer, ok := tt.expected.(int)
-		if ok {
+		switch integer := tt.expected.(type) {
+		case int:
 			testIntegerObject(t, evaluated, int64(integer), tt.ir)
-		} else {
+		case nil:
 			testNullObject(t, evaluated)
+		case bool:
+			testBoolObjct(t, evaluated, integer, tt.ir)
 		}
 	}
 }
@@ -63,4 +67,31 @@ func testNullObject(t *testing.T, obj ir.IRObject) bool {
 		return false
 	}
 	return true
+}
+
+func testBoolObjct(t *testing.T, obj ir.IRObject, expected bool, expectedIr string) bool {
+	result, ok := obj.(*ir.BooleanObject)
+	if obj.IR() != expectedIr {
+		t.Errorf("IRcode is %v, want %s", obj.IR(), expectedIr)
+		return false
+	}
+	if !ok {
+		t.Errorf("object is %T (%+v), want Boolean", obj, obj)
+		return false
+	}
+	if result.Value != expected {
+		t.Errorf("Value is %v, want %v", result.Value, expected)
+		return false
+	}
+	return true
+}
+
+func TestIR(t *testing.T) {
+	MakeTargetTriple()
+	input := "true"
+	l := lexer.New(input)
+	p := parser.New(l)
+	program := p.ParseProgram()
+	Compile(program)
+	t.Errorf("\n%v", GetIR())
 }
