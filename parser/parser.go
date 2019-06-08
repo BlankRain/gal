@@ -57,7 +57,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
-	p.registerPrefix(token.GQLSTRING, p.parseGraphQLLiteral)
+	p.registerPrefix(token.GQL, p.parseGraphQLLiteral)
 	// add pacakge ,nodetype
 	p.registerPrefix(token.PACKAGE, p.parsePackageLiteral)
 	p.registerPrefix(token.NODETYPE, p.parseNodeTypeLiteral)

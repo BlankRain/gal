@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/BlankRain/gal/ast"
 	"github.com/BlankRain/gal/token"
 	"github.com/dgraph-io/dgraph/gql"
@@ -67,8 +69,7 @@ func (p *Parser) parseNodeTypeProperties() []*ast.Property {
 	}
 	return ret
 }
-func (p *Parser) parseNodeTypeQuery() *ast.Query {
-	q := &ast.Query{}
+func (p *Parser) parseNodeTypeQuery() *ast.GraphQLLiteral {
 	//@
 	if !p.expectPeek(token.AT) {
 		return nil
@@ -81,17 +82,22 @@ func (p *Parser) parseNodeTypeQuery() *ast.Query {
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
-	if !p.expectPeek(token.GQLSTRING) {
+	if !p.expectPeek(token.GQL) {
 		return nil
 	}
-	q.Body = p.curToken.Literal
-	r, _ := gql.Parse(gql.Request{Str: q.Body})
-	// if e != nil {
-	// 	return nil
-	// }
-	q.Result = r
+	ex := &ast.GraphQLLiteral{
+		Token: p.curToken,
+		Body:  p.curToken.Literal,
+	}
+	r, e := gql.Parse(gql.Request{Str: ex.Body})
+	if e != nil {
+		msg := fmt.Sprintf("could not parse %q as graphql", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	ex.Result = r
 	if !p.expectPeek(token.RBRACE) {
 		return nil
 	}
-	return q
+	return ex
 }

@@ -1,18 +1,23 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/BlankRain/gal/ast"
-	"github.com/BlankRain/gal/token"
+	"github.com/dgraph-io/dgraph/gql"
 )
 
 func (p *Parser) parseGraphQLLiteral() ast.Expression {
 	ex := &ast.GraphQLLiteral{
 		Token: p.curToken,
+		Body:  p.curToken.Literal,
 	}
-	p.nextToken()
-	if !p.peekTokenIs(token.GQLSTRING) {
+	r, e := gql.Parse(gql.Request{Str: ex.Body})
+	if e != nil {
+		msg := fmt.Sprintf("could not parse %q as graphql", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
 		return nil
 	}
-	ex.Value = p.curToken.Literal
+	ex.Result = r
 	return ex
 }

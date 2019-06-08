@@ -378,12 +378,12 @@ func TestParsingNodeType(t *testing.T) {
 		Url: string ,
 		Hello: string,
 	}@Query{
-		"""
+		"""query{
 		q(func: has(website)){
 			uid
 			url
 			name
-		}
+		}}
 		"""
 	}`
 	l := lexer.New(input)
@@ -394,8 +394,9 @@ func TestParsingNodeType(t *testing.T) {
 	node, ok := stmt.Expression.(*ast.NodeTypeLiteral)
 
 	if !ok {
-		t.Fatalf("exp not *ast.NodeTypeLiteral got=%v", node.String())
+		t.Fatalf("1 exp not *ast.NodeTypeLiteral got=%v", node.String())
 	} else {
-		t.Fatalf("exp not *ast.NodeTypeLiteral got=%v", node.String())
+		t.Fatalf("2 exp not *ast.NodeTypeLiteral got=%v", node.String())
+		// t.Fatalf("%v", node.Query.Result)
 	}
 }
