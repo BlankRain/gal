@@ -17,12 +17,7 @@ func (p *Parser) parseNodeTypeLiteral() ast.Expression {
 		return nil
 	}
 	ex.NodeName = p.curToken.Literal
-	// {
-	if !p.expectPeek(token.LBRACE) {
-		return nil
-	}
 	ex.Properties = p.parseNodeTypeProperties()
-	// }
 	//@Query{}
 	ex.Query = p.parseNodeTypeQuery()
 	return ex
@@ -30,6 +25,9 @@ func (p *Parser) parseNodeTypeLiteral() ast.Expression {
 
 func (p *Parser) parseNodeTypeProperties() []*ast.Property {
 	ret := []*ast.Property{}
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
 	if !p.expectPeek(token.IDENT) {
 		return ret
 	}

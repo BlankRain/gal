@@ -47,7 +47,9 @@ const (
 	// gal feature
 	PACKAGE  = "PACKAGE"
 	NODETYPE = "NODETYPE"
+	EDGETYPE = "EDGETYPE"
 	SHOW     = ":"
+	AS       = "AS"
 	AT       = "@"
 	GQL      = "GQL"
 )
@@ -63,7 +65,9 @@ var keywords = map[string]TokenType{
 	"return":   RETURN,
 	"package":  PACKAGE,
 	"NodeType": NODETYPE,
+	"EdgeType": EDGETYPE,
 	"@":        AT,
+	"as":       AS,
 }
 
 func LookupIdent(ident string) TokenType {

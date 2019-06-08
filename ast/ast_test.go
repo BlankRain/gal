@@ -27,18 +27,37 @@ func TestString(t *testing.T) {
 	}
 }
 
-func TestNodeType(t *testing.T) {
+// func TestNodeType(t *testing.T) {
+// 	program := &Program{
+// 		Statements: []Statement{
+// 			&NodeTypeLiteral{
+// 				Token:    token.Token{Type: token.NODETYPE, Literal: "NodeType"},
+// 				NodeName: "Page",
+// 			},
+// 		},
+// 	}
+// 	if program.String() != "NodeType  Page{}" {
+// 		t.Fatalf("expect 'NodeType Page{};'but,got  '%v'", program.String())
+// 	}
+// }
+
+func TestEdgeType(t *testing.T) {
 	program := &Program{
 		Statements: []Statement{
-			&NodeTypeLiteral{
-				Token:      token.Token{Type: token.NODETYPE, Literal: "NodeType"},
-				NodeName:   "Page",
-				Properties: []property{},
-				Query:      query{},
+			&EdgeTypeLiteral{
+				Token:       token.Token{Type: token.EDGETYPE, Literal: "EdgeType"},
+				EdgeName:    "friend",
+				SourceRefer: "st",
+				SourceType:  "Person",
+				TargetRefer: "tt",
+				TargetType:  "Person",
+				IsReverse:   true,
 			},
 		},
 	}
-	if program.String() != "NodeType  Page{}" {
-		t.Fatalf("expect 'NodeType Page{};'but,got  '%v'", program.String())
+	expt := `EdgeType  friend(st: Person,tt: Person)@reverse{
+}`
+	if program.String() != expt {
+		t.Fatalf("expect \n%v\n but,got  '\n%v\n'", expt, program.String())
 	}
 }

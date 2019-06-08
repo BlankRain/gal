@@ -61,6 +61,7 @@ func New(l *lexer.Lexer) *Parser {
 	// add pacakge ,nodetype
 	p.registerPrefix(token.PACKAGE, p.parsePackageLiteral)
 	p.registerPrefix(token.NODETYPE, p.parseNodeTypeLiteral)
+	p.registerPrefix(token.EDGETYPE, p.parseEdgeTypeLiteral)
 	//
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
@@ -98,6 +99,9 @@ func (p *Parser) Errors() []string {
 
 func (p *Parser) peekError(t token.TokenType) {
 	msg := fmt.Sprintf("expected next token to be %s  , but got %s instead", t, p.peekToken.Type)
+	p.errors = append(p.errors, msg)
+}
+func (p *Parser) addError(msg string) {
 	p.errors = append(p.errors, msg)
 }
 func (p *Parser) nextToken() {

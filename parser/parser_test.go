@@ -395,8 +395,25 @@ func TestParsingNodeType(t *testing.T) {
 
 	if !ok {
 		t.Fatalf("1 exp not *ast.NodeTypeLiteral got=%v", node.String())
+	}
+}
+func TestParsingEdgeType(t *testing.T) {
+	input := `EdgeType friend (s:Person,t:Person) @reverse  @filter(has){
+		uid :string,
+		name :string as t.Name+s.Name,
+			
+	}`
+	//name: s.Name+t.Name,
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	node, ok := stmt.Expression.(*ast.EdgeTypeLiteral)
+
+	if !ok {
+		t.Fatalf("1 exp not *ast.EdgeTypeLiteral got=%v", node.String())
 	} else {
-		t.Fatalf("2 exp not *ast.NodeTypeLiteral got=%v", node.String())
-		// t.Fatalf("%v", node.Query.Result)
+		t.Fatalf("%v", node.String())
 	}
 }
