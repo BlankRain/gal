@@ -75,9 +75,21 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.LBRACKET, l.ch)
 	case ']':
 		tok = newToken(token.RBRACKET, l.ch)
-	case '"':
-		tok.Type = token.STRING
-		tok.Literal = l.readString()
+	case '"': // """
+		if l.peekChar() == '"' {
+			l.readChar()
+			if l.peekChar() == '"' {
+				l.readChar()
+				tok = token.Token{Type: token.GQLSTRING, Literal: l.readGraphQLBody()}
+			}
+		} else {
+			tok.Type = token.STRING
+			tok.Literal = l.readString()
+		}
+	case ':':
+		tok = newToken(token.SHOW, l.ch)
+	case '@':
+		tok = newToken(token.AT, l.ch)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -114,7 +126,7 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 }
 
 func isLetter(ch byte) bool {
-	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_' || ch == '.'
 }
 func isNumber(ch byte) bool {
 	return '0' <= ch && ch <= '9'
@@ -145,4 +157,20 @@ func (l *Lexer) readString() string {
 		}
 	}
 	return l.input[position:l.position]
+}
+func (l *Lexer) readGraphQLBody() string {
+	position := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '"' {
+			l.readChar()
+			if l.ch == '"' {
+				l.readChar()
+				if l.ch == '"' {
+					break
+				}
+			}
+		}
+	}
+	return l.input[position : l.position-2]
 }

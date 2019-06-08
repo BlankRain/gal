@@ -8,7 +8,7 @@ import (
 
 func TestNextToken(t *testing.T) {
 	input := `=+(){},;
-	[1, 2];`
+	[1, 2];"""hellographql"""`
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
@@ -28,6 +28,7 @@ func TestNextToken(t *testing.T) {
 		{token.INT, "2"},
 		{token.RBRACKET, "]"},
 		{token.SEMICOLON, ";"},
+		{token.GQLSTRING, "hellographql"},
 		{token.EOF, ""},
 	}
 	l := New(input)
@@ -37,7 +38,7 @@ func TestNextToken(t *testing.T) {
 			t.Fatalf("test[%d] - token type wrong. expected =%q, got =%q", i, tt.expectedType, tok.Type)
 		}
 		if tok.Literal != tt.expectedLiteral {
-			t.Fatalf("test[%d] - token literal  wrong. expected =%q, got =%q", i, tt.expectedLiteral, tok.Type)
+			t.Fatalf("test[%d] - token literal  wrong. expected =%q, got =%q", i, tt.expectedLiteral, tok.Literal)
 		}
 	}
 }
