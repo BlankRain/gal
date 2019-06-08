@@ -45,11 +45,11 @@ const (
 	ELSE     = "ELSE"
 	RETURN   = "RETURN"
 	// gal feature
-	PACKAGE   = "PACKAGE"
-	NODETYPE  = "NODETYPE"
-	SHOW      = ":"
-	AT        = "@"
-	GQLSTRING = "GQL"
+	PACKAGE  = "PACKAGE"
+	NODETYPE = "NODETYPE"
+	SHOW     = ":"
+	AT       = "@"
+	GQL      = "GQL"
 )
 
 var keywords = map[string]TokenType{
