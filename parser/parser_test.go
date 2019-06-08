@@ -360,3 +360,42 @@ func TestParsingIndexExpressions(t *testing.T) {
 		return
 	}
 }
+func TestParsingPackageExpressions(t *testing.T) {
+	input := "package helloworld; let a =1;"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	pkg, ok := stmt.Expression.(*ast.PackageLiteral)
+	if !ok {
+		t.Fatalf("exp not *ast.PackageLiteral got=%T", pkg.String())
+	}
+}
+
+func TestParsingNodeType(t *testing.T) {
+	input := `NodeType Page{
+		Url: string ,
+		Hello: string,
+	}@Query{
+		"""
+		q(func: has(website)){
+			uid
+			url
+			name
+		}
+		"""
+	}`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	node, ok := stmt.Expression.(*ast.NodeTypeLiteral)
+
+	if !ok {
+		t.Fatalf("exp not *ast.NodeTypeLiteral got=%v", node.String())
+	} else {
+		t.Fatalf("exp not *ast.NodeTypeLiteral got=%v", node.String())
+	}
+}
