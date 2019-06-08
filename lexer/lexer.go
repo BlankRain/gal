@@ -80,7 +80,7 @@ func (l *Lexer) NextToken() token.Token {
 			l.readChar()
 			if l.peekChar() == '"' {
 				l.readChar()
-				tok = token.Token{Type: token.GQLSTRING, Literal: l.readGraphQLBody()}
+				tok = token.Token{Type: token.GQL, Literal: l.readGraphQLBody()}
 			}
 		} else {
 			tok.Type = token.STRING
