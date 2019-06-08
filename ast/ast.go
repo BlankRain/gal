@@ -322,3 +322,16 @@ func (ie *IndexExpression) String() string {
 	out.WriteString("])")
 	return out.String()
 }
+
+type PackageLiteral struct {
+	Token token.Token
+	Value string
+}
+
+func (fl *PackageLiteral) expressionNode() {}
+func (fl *PackageLiteral) TokenLiteral() string {
+	return fl.Token.Literal
+}
+func (pl *PackageLiteral) String() string {
+	return pl.Token.Literal + " " + pl.Value + ";"
+}

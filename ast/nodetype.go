@@ -2,10 +2,8 @@ package ast
 
 import (
 	"bytes"
-	"fmt"
 
 	"github.com/BlankRain/gal/token"
-	"github.com/dgraph-io/dgraph/gql"
 )
 
 /**
@@ -25,15 +23,11 @@ type NodeTypeLiteral struct {
 	Token      token.Token
 	NodeName   string
 	Properties []*Property
-	Query      *Query
+	Query      *GraphQLLiteral
 }
 type Property struct {
 	Name string
 	Type string
-}
-type Query struct {
-	Body   string
-	Result gql.Result
 }
 
 func (node *NodeTypeLiteral) expressionNode() {}
@@ -53,7 +47,7 @@ func (node *NodeTypeLiteral) String() string {
 	out.WriteString("}")
 	// append @query
 	out.WriteString("@Query{\n")
-	out.WriteString(fmt.Sprintf("%v", node.Query.Result))
+	out.WriteString(node.Query.Body)
 	out.WriteString("\n}\n")
 	return out.String()
 }

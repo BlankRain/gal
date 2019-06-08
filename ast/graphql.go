@@ -19,7 +19,7 @@ func (node *GraphQLLiteral) TokenLiteral() string {
 }
 func (node *GraphQLLiteral) String() string {
 	var out bytes.Buffer
-
+	out.WriteString(node.Body)
 	return out.String()
 }
 func (node *GraphQLLiteral) statementNode() {}
