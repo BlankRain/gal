@@ -52,6 +52,8 @@ const (
 	AS       = "AS"
 	AT       = "@"
 	GQL      = "GQL"
+	FROM     = "FROM"
+	MAKE     = "MAKE"
 )
 
 var keywords = map[string]TokenType{
@@ -68,6 +70,8 @@ var keywords = map[string]TokenType{
 	"EdgeType": EDGETYPE,
 	"@":        AT,
 	"as":       AS,
+	"make":     MAKE,
+	"from":     FROM,
 }
 
 func LookupIdent(ident string) TokenType {

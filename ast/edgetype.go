@@ -52,9 +52,9 @@ func (node *EdgeTypeLiteral) String() string {
 	out.WriteString(node.SourceRefer + ": " + node.SourceType)
 	out.WriteString(",")
 	out.WriteString(node.TargetRefer + ": " + node.TargetType)
-	out.WriteString(")")
+	out.WriteString(") ")
 	if node.IsReverse {
-		out.WriteString("@reverse")
+		out.WriteString("@reverse ")
 	}
 	if node.Filter != nil {
 		out.WriteString(node.Filter.String())
@@ -77,8 +77,11 @@ func (node *EdgeFilter) String() string {
 	var out bytes.Buffer
 	out.WriteString("@filter(")
 	out.WriteString(node.FuncName + "(")
-	for _, funcParam := range node.FuncParams {
+	for i, funcParam := range node.FuncParams {
 		out.WriteString(funcParam.String())
+		if i != len(node.FuncParams)-1 {
+			out.WriteString(", ")
+		}
 	}
 	out.WriteString("))")
 	return out.String()

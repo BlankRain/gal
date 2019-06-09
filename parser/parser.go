@@ -62,6 +62,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.PACKAGE, p.parsePackageLiteral)
 	p.registerPrefix(token.NODETYPE, p.parseNodeTypeLiteral)
 	p.registerPrefix(token.EDGETYPE, p.parseEdgeTypeLiteral)
+	p.registerPrefix(token.FROM, p.parseFromGraphLiteral)
 	//
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)

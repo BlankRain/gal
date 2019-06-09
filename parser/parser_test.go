@@ -398,7 +398,7 @@ func TestParsingNodeType(t *testing.T) {
 	}
 }
 func TestParsingEdgeType(t *testing.T) {
-	input := `EdgeType friend (s:Person,t:Person) @reverse  @filter(has){
+	input := `EdgeType friend (s:Person,t:Person) @reverse  @filter(has(a,b)){
 		uid :string,
 		name :string as t.Name+s.Name,
 			
@@ -413,6 +413,21 @@ func TestParsingEdgeType(t *testing.T) {
 
 	if !ok {
 		t.Fatalf("1 exp not *ast.EdgeTypeLiteral got=%v", node.String())
+	}
+}
+
+func TestParsingFromMake(t *testing.T) {
+	input := `from Graph([Page],[referTo]) g`
+	input = `from Graph([Page,Person],[referTo, ok,word,,b,,c,d]) g`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	node, ok := stmt.Expression.(*ast.FromGraphLiteral)
+
+	if !ok {
+		t.Fatalf("1 exp not *ast.FromGraphLiteral got=%v", node.String())
 	} else {
 		t.Fatalf("%v", node.String())
 	}

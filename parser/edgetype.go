@@ -150,9 +150,39 @@ func (p *Parser) parseEdgeFilter() *ast.EdgeFilter {
 		return nil
 	}
 	ef.FuncName = p.curToken.Literal
-	// ef.FuncParams = p.parseFunctionParameters()
+	ef.FuncParams = p.parseFilterParameters()
 	if !p.expectPeek(token.RPAREN) { //)
 		return nil
 	}
 	return ef
+}
+func (p *Parser) parseFilterParameters() []*ast.Identifier {
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+	ids := []*ast.Identifier{}
+	if p.peekTokenIs(token.RPAREN) {
+		p.nextToken()
+		return ids
+	}
+	p.nextToken()
+	ident := &ast.Identifier{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
+	ids = append(ids, ident)
+
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		ident := &ast.Identifier{
+			Token: p.curToken,
+			Value: p.curToken.Literal,
+		}
+		ids = append(ids, ident)
+	}
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+	return ids
 }

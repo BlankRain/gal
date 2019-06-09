@@ -28,7 +28,7 @@ make function  PageRank()  {
     print(g)
 }
 
-from Graph([Page],[referTo]  g  
+from Graph([Page],[referTo])  g  
 make function  ShortestPath(sourePage Page ,endPage Page) Path([Page]){
     print(g)
 }
