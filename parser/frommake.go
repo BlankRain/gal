@@ -96,3 +96,10 @@ func (p *Parser) parseFromGraphEdgeTypes() []*ast.Identifier {
 func (p *Parser) parseFromGraphNodeTypes() []*ast.Identifier {
 	return p.parseIdentifierArrays()
 }
+
+func (p *Parser) parseMakeLiteral() ast.Expression {
+	ml := &ast.MakeLiteral{
+		Token: p.curToken,
+	}
+	return ml
+}

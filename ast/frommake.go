@@ -12,6 +12,16 @@ type FromGraphLiteral struct {
 	EdgeTypes []*Identifier
 	As        *AsExpression
 }
+type MakeType string //function or sth else
+type ReturnObject struct {
+}
+type MakeLiteral struct {
+	Token  token.Token
+	Type   MakeType
+	Name   *Identifier
+	Params []*Identifier
+	Return ReturnObject
+}
 
 func (node *FromGraphLiteral) expressionNode() {}
 func (node *FromGraphLiteral) TokenLiteral() string {
@@ -44,5 +54,14 @@ func (node *FromGraphLiteral) String() string {
 
 	out.WriteString(") ")
 	out.WriteString(node.As.Literal)
+	return out.String()
+}
+
+func (node *MakeLiteral) expressionNode() {}
+func (node *MakeLiteral) TokenLiteral() string {
+	return node.Token.Literal
+}
+func (node *MakeLiteral) String() string {
+	var out bytes.Buffer
 	return out.String()
 }
