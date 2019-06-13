@@ -98,8 +98,73 @@ func (p *Parser) parseFromGraphNodeTypes() []*ast.Identifier {
 }
 
 func (p *Parser) parseMakeLiteral() ast.Expression {
+	if !p.curTokenIs(token.MAKE) {
+		p.addError("need toke.Make")
+		return nil
+	}
 	ml := &ast.MakeLiteral{
 		Token: p.curToken,
 	}
+	if !p.expectPeek(token.FUNCTION) {
+		return nil
+	}
+	ml.Type = "function"
+	if !p.expectPeek(token.IDENT) {
+		p.addError("need ident")
+		return nil
+	}
+	ml.Name = &ast.Identifier{
+		Token: p.curToken,
+		Value: p.curToken.Literal}
+	ml.Params = p.parseFunctionWithTypeParams()
+	if !p.peekTokenIs(token.LBRACE) {
+		// read return type
+	} else {
+		ml.Return.Literal = "void"
+		p.nextToken()
+	}
+	ml.Body = p.parseBlockStatement()
 	return ml
+}
+
+func (p *Parser) parseFunctionWithTypeParams() []*ast.FunctionParam {
+	params := []*ast.FunctionParam{}
+	if p.peekTokenIs(token.RPAREN) {
+		return params
+	}
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+	p.nextToken()
+	parm := &ast.FunctionParam{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
+	p.nextToken()
+	if !p.curTokenIs(token.IDENT) {
+		p.addError("Type should be ident")
+		return nil
+	}
+	parm.Type = p.curToken.Literal
+	params = append(params, parm)
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		parm := &ast.FunctionParam{
+			Token: p.curToken,
+			Value: p.curToken.Literal,
+		}
+		p.nextToken()
+		if !p.curTokenIs(token.IDENT) {
+			p.addError("Type should be ident")
+			return nil
+		}
+		parm.Type = p.curToken.Literal
+		params = append(params, parm)
+	}
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	return params
 }

@@ -335,3 +335,18 @@ func (fl *PackageLiteral) TokenLiteral() string {
 func (pl *PackageLiteral) String() string {
 	return pl.Token.Literal + " " + pl.Value + ";"
 }
+
+type FunctionParam struct {
+	Token token.Token
+	Value string
+	Type  string
+}
+
+func (id *FunctionParam) statementNode()  {}
+func (id *FunctionParam) expressionNode() {}
+func (id *FunctionParam) TokenLiteral() string {
+	return id.Token.Literal
+}
+func (id *FunctionParam) String() string {
+	return id.Value + " :" + id.Type
+}

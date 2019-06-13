@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/BlankRain/gal/ast"
@@ -417,8 +418,7 @@ func TestParsingEdgeType(t *testing.T) {
 }
 
 func TestParsingFromMake(t *testing.T) {
-	input := `from Graph([Page],[referTo]) g`
-	input = `from Graph([Page,Person],[referTo, ok,word,,b,,c,d]) g`
+	input := `from Graph([Page,Person],[referTo, ok,word,,b,,c,d]) g`
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()
@@ -428,6 +428,22 @@ func TestParsingFromMake(t *testing.T) {
 
 	if !ok {
 		t.Fatalf("1 exp not *ast.FromGraphLiteral got=%v", node.String())
+	}
+}
+
+func TestParsingMake(t *testing.T) {
+	input := `make function Short(a TypeA,b TypeB){
+		println(a)
+	}`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	node, ok := stmt.Expression.(*ast.MakeLiteral)
+	if !ok {
+		cType := reflect.TypeOf(stmt.Expression)
+		t.Fatalf("1 exp not *ast.MakeLiteral got=%v", cType)
 	} else {
 		t.Fatalf("%v", node.String())
 	}
